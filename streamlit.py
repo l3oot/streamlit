@@ -1,35 +1,31 @@
 import streamlit as st
-
-# Title and header
-st.title("แอปพลิเคชันตัวอย่างด้วย Streamlit")
-st.header("ยินดีต้อนรับ!")
-
-# Text input
-name = st.text_input("กรุณากรอกชื่อของคุณ:")
-
-# Select box
-favorite_color = st.selectbox("เลือกสีที่คุณชอบ:", ["แดง", "เขียว", "น้ำเงิน"])
-
-# Slider
-age = st.slider("อายุของคุณ:", 0, 100, 25)
-
-# Button
-if st.button("ยืนยัน"):
-    st.write(f"สวัสดี {name}!")
-    st.write(f"คุณชอบสี {favorite_color} และคุณอายุ {age} ปี!")
-
-# File uploader
-uploaded_file = st.file_uploader("อัปโหลดไฟล์ (ถ้ามี):")
-if uploaded_file is not None:
-    st.write("ไฟล์ที่คุณอัปโหลด:", uploaded_file.name)
-
-# Data visualization example
-import pandas as pd
+import matplotlib.pyplot as plt
 import numpy as np
 
-data = pd.DataFrame(
-    np.random.randn(10, 2),
-    columns=['X', 'Y']
-)
+# HTML ส่วนหัว
+st.markdown("""
+    <h1 style="color:blue; text-align:center;">Streamlit + HTML + Matplotlib</h1>
+    <p style="text-align:center; font-size:18px;">นี่คือการใช้ HTML ร่วมกับ Streamlit และกราฟจาก Matplotlib</p>
+""", unsafe_allow_html=True)
 
-st.line_chart(data)
+# สร้างข้อมูลสำหรับกราฟ
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+# สร้างกราฟ Matplotlib
+fig, ax = plt.subplots()
+ax.plot(x, y, label="Sine Wave", color="blue")
+ax.set_title("Sine Wave Example")
+ax.set_xlabel("X-axis")
+ax.set_ylabel("Y-axis")
+ax.legend()
+
+# แสดงกราฟใน Streamlit
+st.pyplot(fig)
+
+# HTML ส่วนท้าย
+st.markdown("""
+    <hr>
+    <p style="text-align:center;">กราฟถูกสร้างด้วย <b>Matplotlib</b> และแสดงผลใน Streamlit</p>
+    <p style="text-align:center;"><i>Powered by Streamlit</i></p>
+""", unsafe_allow_html=True)
