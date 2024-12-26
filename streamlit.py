@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 # ตั้งค่า style ของ seaborn
 sns.set_style("whitegrid")
-plt.style.use("seaborn")
+plt.style.use("ggplot")
 
 # ตั้งค่าหน้าเว็บ
 st.set_page_config(page_title="Advanced Graphs Demo", layout="wide")
