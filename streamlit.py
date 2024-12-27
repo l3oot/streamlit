@@ -11,12 +11,59 @@ plt.style.use("ggplot")
 
 # ตั้งค่าหน้าเว็บ
 st.set_page_config(page_title="Advanced Graphs Demo", layout="wide")
-st.title("การแสดงผลกราฟขั้นสูงด้วย Streamlit และ Matplotlib")
 
-# สร้างข้อมูลตัวอย่าง
+# Custom CSS and HTML
+st.markdown("""
+<style>
+    .dashboard-container {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .graph-container {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    .title-text {
+        color: #2c3e50;
+        font-size: 32px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .subtitle-text {
+        color: #34495e;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    .stats-container {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+    }
+    .stat-box {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .sidebar {
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# สร้างข้อมูลตัวอย่าง (ใช้ฟังก์ชันเดิม)
 @st.cache_data
 def generate_sample_data():
-    # ข้อมูลยอดขายรายวัน
     dates = pd.date_range(start='2024-01-01', periods=90, freq='D')
     sales = np.random.normal(1000, 200, 90).cumsum()
     df_sales = pd.DataFrame({
@@ -25,7 +72,6 @@ def generate_sample_data():
         'เป้าหมาย': sales * 1.1
     })
     
-    # ข้อมูลสินค้าตามหมวดหมู่
     categories = ['อาหาร', 'เครื่องดื่ม', 'ขนม', 'ของใช้', 'เครื่องสำอาง']
     products = pd.DataFrame({
         'หมวดหมู่': categories,
@@ -37,12 +83,19 @@ def generate_sample_data():
 
 df_sales, products = generate_sample_data()
 
-# สร้าง 2 คอลัมน์
+# สร้าง HTML Layout
+st.markdown("""
+<div class="dashboard-container">
+    <div class="title-text">แดชบอร์ดวิเคราะห์ยอดขาย</div>
+</div>
+""", unsafe_allow_html=True)
+
+# สร้างคอลัมน์สำหรับกราฟ
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("กราฟแนวโน้มยอดขาย")
-    # สร้างกราฟเส้นแบบมีพื้นที่ใต้กราฟ
+    st.markdown('<div class="graph-container">', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle-text">กราฟแนวโน้มยอดขาย</div>', unsafe_allow_html=True)
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.fill_between(df_sales['วันที่'], df_sales['ยอดขาย'], 
                    alpha=0.3, color='royalblue', label='พื้นที่ยอดขาย')
@@ -50,7 +103,6 @@ with col1:
             color='royalblue', label='ยอดขายจริง')
     ax.plot(df_sales['วันที่'], df_sales['เป้าหมาย'], 
             '--', color='coral', label='เป้าหมาย')
-    
     ax.set_title('ยอดขายเทียบกับเป้าหมาย')
     ax.set_xlabel('วันที่')
     ax.set_ylabel('ยอดขาย (บาท)')
@@ -58,27 +110,27 @@ with col1:
     plt.xticks(rotation=45)
     plt.tight_layout()
     st.pyplot(fig)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 with col2:
-    st.subheader("การวิเคราะห์สินค้าแต่ละหมวดหมู่")
-    # สร้าง scatter plot ด้วย seaborn
+    st.markdown('<div class="graph-container">', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle-text">การวิเคราะห์สินค้าแต่ละหมวดหมู่</div>', unsafe_allow_html=True)
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.scatterplot(data=products, x='ยอดขาย', y='กำไร', 
                     size='ยอดขาย', sizes=(100, 1000),
                     hue='หมวดหมู่', ax=ax)
-    
-    # เพิ่ม label ให้แต่ละจุด
     for idx, row in products.iterrows():
         ax.annotate(row['หมวดหมู่'], 
                    (row['ยอดขาย'], row['กำไร']),
                    xytext=(5, 5), textcoords='offset points')
-    
     ax.set_title('ความสัมพันธ์ระหว่างยอดขายและกำไรตามหมวดหมู่')
     plt.tight_layout()
     st.pyplot(fig)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# สร้างกราฟวงกลม
-st.subheader("สัดส่วนยอดขายตามหมวดหมู่")
+# สร้างแถวใหม่สำหรับกราฟล่าง
+st.markdown('<div class="graph-container">', unsafe_allow_html=True)
+st.markdown('<div class="subtitle-text">สัดส่วนยอดขายตามหมวดหมู่</div>', unsafe_allow_html=True)
 fig, ax = plt.subplots(figsize=(10, 6))
 wedges, texts, autotexts = ax.pie(products['ยอดขาย'], 
                                  labels=products['หมวดหมู่'],
@@ -88,32 +140,48 @@ wedges, texts, autotexts = ax.pie(products['ยอดขาย'],
 ax.set_title('สัดส่วนยอดขายแต่ละหมวดหมู่')
 plt.tight_layout()
 st.pyplot(fig)
+st.markdown('</div>', unsafe_allow_html=True)
 
-# สร้างกราฟ Distribution ด้วย Seaborn
-st.subheader("การกระจายตัวของยอดขาย")
-fig, ax = plt.subplots(figsize=(10, 6))
-sns.histplot(data=df_sales, x='ยอดขาย', bins=20, kde=True)
-ax.set_title('การกระจายตัวของยอดขาย')
-plt.tight_layout()
-st.pyplot(fig)
+# สถิติพื้นฐานในรูปแบบ card
+st.markdown("""
+<div class="stats-container">
+    <div class="stat-box">
+        <h3>ยอดขายเฉลี่ย</h3>
+        <p>{:,.0f} บาท</p>
+    </div>
+    <div class="stat-box">
+        <h3>ยอดขายสูงสุด</h3>
+        <p>{:,.0f} บาท</p>
+    </div>
+    <div class="stat-box">
+        <h3>ยอดขายต่ำสุด</h3>
+        <p>{:,.0f} บาท</p>
+    </div>
+</div>
+""".format(
+    df_sales['ยอดขาย'].mean(),
+    df_sales['ยอดขาย'].max(),
+    df_sales['ยอดขาย'].min()
+), unsafe_allow_html=True)
 
-# เพิ่มตัวกรองข้อมูล
-st.sidebar.header("ตัวกรองข้อมูล")
-date_range = st.sidebar.date_input(
-    "เลือกช่วงวันที่",
-    value=(df_sales['วันที่'].min(), df_sales['วันที่'].max())
-)
+# Sidebar with filters
+with st.sidebar:
+    st.markdown('<div class="sidebar">', unsafe_allow_html=True)
+    st.header("ตัวกรองข้อมูล")
+    date_range = st.date_input(
+        "เลือกช่วงวันที่",
+        value=(df_sales['วันที่'].min(), df_sales['วันที่'].max())
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# สถิติพื้นฐาน
-st.sidebar.subheader("สถิติพื้นฐาน")
-st.sidebar.metric("ยอดขายเฉลี่ย", f"{df_sales['ยอดขาย'].mean():,.0f} บาท")
-st.sidebar.metric("ยอดขายสูงสุด", f"{df_sales['ยอดขาย'].max():,.0f} บาท")
-st.sidebar.metric("ยอดขายต่ำสุด", f"{df_sales['ยอดขาย'].min():,.0f} บาท")
-
-# แสดงข้อมูลดิบ
+# Toggle for raw data
 if st.checkbox("แสดงข้อมูลดิบ"):
-    st.subheader("ข้อมูลยอดขายรายวัน")
+    st.markdown('<div class="graph-container">', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle-text">ข้อมูลยอดขายรายวัน</div>', unsafe_allow_html=True)
     st.dataframe(df_sales)
+    st.markdown('</div>', unsafe_allow_html=True)
     
-    st.subheader("ข้อมูลสินค้าตามหมวดหมู่")
+    st.markdown('<div class="graph-container">', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle-text">ข้อมูลสินค้าตามหมวดหมู่</div>', unsafe_allow_html=True)
     st.dataframe(products)
+    st.markdown('</div>', unsafe_allow_html=True)
